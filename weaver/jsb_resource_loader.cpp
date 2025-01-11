@@ -3,14 +3,33 @@
 #include "jsb_script_language.h"
 #include "jsb_script.h"
 
+
+void ResourceFormatLoaderGodotJSScript::register_resource_extension(String ext, GodotJSScriptLanguage * lang)
+{
+    lang_map_.insert(ext, lang);
+}
+
 Ref<Resource> ResourceFormatLoaderGodotJSScript::load(const String& p_path, const String& p_original_path, Error* r_error, bool p_use_sub_threads, float* r_progress, CacheMode p_cache_mode)
 {
     JSB_BENCHMARK_SCOPE(ResourceFormatLoaderGodotJSScript, load);
 
+    GodotJSScriptLanguage * lang = nullptr;
+    for (auto const & i: lang_map_) {
+        if (p_path.ends_with(i.key)) {
+            lang = i.value;
+            break;
+        }
+    }
+
+    if (!lang) {
+        if (r_error) *r_error = ERR_FILE_UNRECOGNIZED;
+        return {};
+    }
+
     {
         //TODO a dirty but approaching solution for hot-reloading
-        MutexLock lock(GodotJSScriptLanguage::singleton_->mutex_);
-        SelfList<GodotJSScript> *elem = GodotJSScriptLanguage::singleton_->script_list_.first();
+        MutexLock lock(lang->mutex_);
+        SelfList<GodotJSScript> *elem = lang->script_list_.first();
         while (elem)
         {
             if (elem->self()->get_path() == p_path)
@@ -58,8 +77,9 @@ Ref<Resource> ResourceFormatLoaderGodotJSScript::load(const String& p_path, cons
 
 void ResourceFormatLoaderGodotJSScript::get_recognized_extensions(List<String>* p_extensions) const
 {
-    p_extensions->push_back(JSB_TYPESCRIPT_EXT);
-    p_extensions->push_back(JSB_JAVASCRIPT_EXT);
+    for (auto const & i: lang_map_) {
+        p_extensions->push_back(i.key);
+    }
 }
 
 bool ResourceFormatLoaderGodotJSScript::handles_type(const String& p_type) const
