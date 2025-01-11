@@ -50,7 +50,7 @@ Ref<Resource> ResourceFormatLoaderGodotJSScript::load(const String& p_path, cons
 
     // return a skeleton script which only contains path and source code without actually loaded in `realm` since `load` may called from background threads
     Ref<GodotJSScript> spt;
-    spt.instantiate();
+    spt.instantiate(lang_);
     spt->attach_source(p_path);
     if (r_error) *r_error = OK;
     return spt;
