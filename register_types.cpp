@@ -31,7 +31,7 @@ void jsb_initialize_module(ModuleInitializationLevel p_level)
         resource_loader_js.instantiate(script_language_js);
         ResourceLoader::add_resource_format_loader(resource_loader_js);
 
-        resource_saver_js.instantiate();
+        resource_saver_js.instantiate(script_language_js);
         ResourceSaver::add_resource_format_saver(resource_saver_js);
 
 #ifdef TOOLS_ENABLED
