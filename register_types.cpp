@@ -28,7 +28,7 @@ void jsb_initialize_module(ModuleInitializationLevel p_level)
         script_language_js = memnew(GodotJSScriptLanguage());
         ScriptServer::register_language(script_language_js);
 
-        resource_loader_js.instantiate();
+        resource_loader_js.instantiate(script_language_js);
         ResourceLoader::add_resource_format_loader(resource_loader_js);
 
         resource_saver_js.instantiate();

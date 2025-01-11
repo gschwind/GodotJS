@@ -9,8 +9,8 @@ Ref<Resource> ResourceFormatLoaderGodotJSScript::load(const String& p_path, cons
 
     {
         //TODO a dirty but approaching solution for hot-reloading
-        MutexLock lock(GodotJSScriptLanguage::singleton_->mutex_);
-        SelfList<GodotJSScript> *elem = GodotJSScriptLanguage::singleton_->script_list_.first();
+        MutexLock lock(lang_->mutex_);
+        SelfList<GodotJSScript> *elem = lang_->script_list_.first();
         while (elem)
         {
             if (elem->self()->get_path() == p_path)
@@ -58,8 +58,7 @@ Ref<Resource> ResourceFormatLoaderGodotJSScript::load(const String& p_path, cons
 
 void ResourceFormatLoaderGodotJSScript::get_recognized_extensions(List<String>* p_extensions) const
 {
-    p_extensions->push_back(JSB_TYPESCRIPT_EXT);
-    p_extensions->push_back(JSB_JAVASCRIPT_EXT);
+    lang_->get_recognized_extensions(p_extensions);
 }
 
 bool ResourceFormatLoaderGodotJSScript::handles_type(const String& p_type) const
