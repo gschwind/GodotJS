@@ -33,7 +33,7 @@ void jsb_initialize_module(ModuleInitializationLevel p_level)
         ScriptServer::register_language(script_language_js);
 
         resource_loader.instantiate();
-        resource_loader->register_resource_extension(JSB_TYPESCRIPT_EXT, script_language_js);
+        resource_loader->register_resource_extension(JSB_TYPESCRIPT_EXT, script_language_ts);
         resource_loader->register_resource_extension(JSB_JAVASCRIPT_EXT, script_language_js);
         ResourceLoader::add_resource_format_loader(resource_loader);
 

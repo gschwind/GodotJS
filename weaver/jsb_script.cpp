@@ -12,7 +12,7 @@
 
 GodotJSScript::GodotJSScript(GodotJSScriptLanguageBase * lang): script_list_(this), lang_(lang)
 {
-    {
+    if (lang_) {
         JSB_BENCHMARK_SCOPE(GodotJSScript, Construct);
         MutexLock lock(lang_->mutex_);
 
@@ -26,7 +26,7 @@ GodotJSScript::~GodotJSScript()
     JSB_LOG(VeryVerbose, "delete GodotJSScript addr:%d", (uintptr_t) this);
     release_cached_methods();
 
-    {
+    if (lang_) {
         JSB_BENCHMARK_SCOPE(GodotJSScript, Destruct);
         MutexLock lock(lang_->mutex_);
 
