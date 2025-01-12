@@ -37,7 +37,7 @@ void jsb_initialize_module(ModuleInitializationLevel p_level)
 #ifdef TOOLS_ENABLED
         EditorNode::add_init_callback([]
         {
-            GodotJSEditorPlugin* plugin = memnew(GodotJSEditorPlugin);
+            GodotJSEditorPlugin* plugin = memnew(GodotJSEditorPlugin(script_language_js));
             EditorNode::add_editor_plugin(plugin);
 
             Ref<GodotJSExportPlugin> exporter;
