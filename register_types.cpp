@@ -12,7 +12,10 @@
 #include "weaver-editor/jsb_export_plugin.h"
 #endif
 
+static GodotJSScriptLanguage* script_language_ts;
 static GodotJSScriptLanguage* script_language_js;
+static Ref<ResourceFormatLoaderGodotJSScript> resource_loader_ts;
+static Ref<ResourceFormatSaverGodotJSScript> resource_saver_ts;
 static Ref<ResourceFormatLoaderGodotJSScript> resource_loader_js;
 static Ref<ResourceFormatSaverGodotJSScript> resource_saver_js;
 
@@ -25,7 +28,16 @@ void jsb_initialize_module(ModuleInitializationLevel p_level)
         jsb::impl::GlobalInitialize::init();
 
         // register javascript language
-        script_language_js = memnew(GodotJSScriptLanguage());
+        script_language_ts = memnew(GodotJSScriptLanguage());
+        ScriptServer::register_language(script_language_ts);
+
+        resource_loader_ts.instantiate(script_language_ts);
+        ResourceLoader::add_resource_format_loader(resource_loader_ts);
+
+        resource_saver_ts.instantiate(script_language_ts);
+        ResourceSaver::add_resource_format_saver(resource_saver_ts);
+
+        script_language_js = memnew(GodotJavascriptLanguage());
         ScriptServer::register_language(script_language_js);
 
         resource_loader_js.instantiate(script_language_js);
@@ -33,6 +45,7 @@ void jsb_initialize_module(ModuleInitializationLevel p_level)
 
         resource_saver_js.instantiate(script_language_js);
         ResourceSaver::add_resource_format_saver(resource_saver_js);
+
 
 #ifdef TOOLS_ENABLED
         EditorNode::add_init_callback([]

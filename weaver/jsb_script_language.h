@@ -139,4 +139,14 @@ public:
 
 };
 
+class GodotJavascriptLanguage : public GodotJSScriptLanguage {
+public:
+    virtual String get_extension() const override { return JSB_JAVASCRIPT_EXT; }
+    virtual void get_recognized_extensions(List<String>* p_extensions) const override;
+    virtual bool handles_global_class_type(const String& p_type) const override;
+    virtual String get_name() const override;
+    virtual String get_type() const override;
+
+};
+
 #endif

@@ -223,7 +223,6 @@ void GodotJSScriptLanguage::reload_tool_script(const Ref<Script>& p_script, bool
 void GodotJSScriptLanguage::get_recognized_extensions(List<String>* p_extensions) const
 {
     p_extensions->push_back(JSB_TYPESCRIPT_EXT);
-    p_extensions->push_back(JSB_JAVASCRIPT_EXT);
 }
 
 String GodotJSScriptLanguage::get_global_class_name(const String& p_path, String* r_base_type, String* r_icon_path) const
@@ -322,3 +321,24 @@ void GodotJSScriptLanguage::thread_exit()
     jsb::Worker::on_thread_exit(Thread::get_caller_id());
 #endif
 }
+
+void GodotJavascriptLanguage::get_recognized_extensions(List<String>* p_extensions) const
+{
+    p_extensions->push_back(JSB_JAVASCRIPT_EXT);
+}
+
+bool GodotJavascriptLanguage::handles_global_class_type(const String& p_type) const
+{
+    return p_type == "JavaScript";
+}
+
+String GodotJavascriptLanguage::get_name() const
+{
+    return "JavaScript";
+}
+
+String GodotJavascriptLanguage::get_type() const
+{
+    return "JavaScript";
+}
+
