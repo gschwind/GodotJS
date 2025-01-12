@@ -4,7 +4,7 @@
 #include "jsb_script.h"
 
 
-void ResourceFormatLoaderGodotJSScript::register_resource_extension(String ext, GodotJSScriptLanguage * lang)
+void ResourceFormatLoaderGodotJSScript::register_resource_extension(String ext, GodotJSScriptLanguageBase * lang)
 {
     lang_map_.insert(ext, lang);
 }
@@ -13,7 +13,7 @@ Ref<Resource> ResourceFormatLoaderGodotJSScript::load(const String& p_path, cons
 {
     JSB_BENCHMARK_SCOPE(ResourceFormatLoaderGodotJSScript, load);
 
-    GodotJSScriptLanguage * lang = nullptr;
+    GodotJSScriptLanguageBase * lang = nullptr;
     for (auto const & i: lang_map_) {
         if (p_path.ends_with(i.key)) {
             lang = i.value;
@@ -29,7 +29,7 @@ Ref<Resource> ResourceFormatLoaderGodotJSScript::load(const String& p_path, cons
     {
         //TODO a dirty but approaching solution for hot-reloading
         MutexLock lock(lang->mutex_);
-        SelfList<GodotJSScript> *elem = lang->script_list_.first();
+        SelfList<GodotJSScriptBase> *elem = lang->script_list_.first();
         while (elem)
         {
             if (elem->self()->get_path() == p_path)
@@ -68,8 +68,8 @@ Ref<Resource> ResourceFormatLoaderGodotJSScript::load(const String& p_path, cons
     JSB_LOG(VeryVerbose, "loading script resource %s on thread %s", p_path, uitos(Thread::get_caller_id()));
 
     // return a skeleton script which only contains path and source code without actually loaded in `realm` since `load` may called from background threads
-    Ref<GodotJSScript> spt;
-    spt.instantiate(lang);
+    Ref<GodotJSScriptBase> spt = lang->create_godotjsscript();
+    // Maybe need fix to load sources if tools is enable
     spt->attach_source(p_path);
     if (r_error) *r_error = OK;
     return spt;
@@ -84,13 +84,17 @@ void ResourceFormatLoaderGodotJSScript::get_recognized_extensions(List<String>* 
 
 bool ResourceFormatLoaderGodotJSScript::handles_type(const String& p_type) const
 {
-    return (p_type == "Script" || p_type == jsb_typename(GodotJSScript));
+    return (p_type == "Script" || p_type == jsb_typename(GodotJSScript) || p_type == jsb_typename(GodotJavaScript));
 }
 
 String ResourceFormatLoaderGodotJSScript::get_resource_type(const String& p_path) const
 {
     const String el = p_path.get_extension().to_lower();
-    return (el == JSB_TYPESCRIPT_EXT || el == JSB_JAVASCRIPT_EXT) ? jsb_typename(GodotJSScript) : "";
+    if (el == JSB_TYPESCRIPT_EXT)
+        return jsb_typename(GodotJSScript);
+    if (el == JSB_JAVASCRIPT_EXT)
+        return jsb_typename(GodotJavaScript);
+    return "";
 }
 
 void ResourceFormatLoaderGodotJSScript::get_dependencies(const String& p_path, List<String>* p_dependencies, bool p_add_types)
