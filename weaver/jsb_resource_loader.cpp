@@ -4,7 +4,7 @@
 #include "jsb_script.h"
 
 
-void ResourceFormatLoaderGodotJSScript::register_resource_extension(String ext, GodotJSScriptLanguage * lang)
+void ResourceFormatLoaderGodotJSScript::register_resource_extension(String ext, GodotJSScriptLanguageBase * lang)
 {
     lang_map_.insert(ext, lang);
 }
@@ -13,7 +13,7 @@ Ref<Resource> ResourceFormatLoaderGodotJSScript::load(const String& p_path, cons
 {
     JSB_BENCHMARK_SCOPE(ResourceFormatLoaderGodotJSScript, load);
 
-    GodotJSScriptLanguage * lang = nullptr;
+    GodotJSScriptLanguageBase * lang = nullptr;
     for (auto const & i: lang_map_) {
         if (p_path.ends_with(i.key)) {
             lang = i.value;

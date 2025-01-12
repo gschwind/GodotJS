@@ -10,7 +10,7 @@
 #include "editor/editor_help.h"
 #endif
 
-GodotJSScript::GodotJSScript(GodotJSScriptLanguage * lang): script_list_(this), lang_(lang)
+GodotJSScript::GodotJSScript(GodotJSScriptLanguageBase * lang): script_list_(this), lang_(lang)
 {
     {
         JSB_BENCHMARK_SCOPE(GodotJSScript, Construct);

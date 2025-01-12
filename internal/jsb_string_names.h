@@ -6,14 +6,14 @@
 #define jsb_string_name(name) ::jsb::internal::StringNames::get_singleton().sn_##name
 #define jsb_literal(name) (sizeof(::jsb::internal::StringNames::sn_##name) == sizeof(StringName), #name)
 
-class GodotJSScriptLanguage;
+class GodotJSScriptLanguageBase;
 
 namespace jsb::internal
 {
     class StringNames
     {
     private:
-        friend class ::GodotJSScriptLanguage;
+        friend class ::GodotJSScriptLanguageBase;
 
         static StringNames* singleton_;
 

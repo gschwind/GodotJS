@@ -6,6 +6,8 @@
 
 #include "../bridge/jsb_bridge.h"
 
+class GodotJSScriptLanguageBase;
+
 class GodotJSScript : public Script
 {
     friend class GodotJSScriptInstance;
@@ -20,7 +22,7 @@ private:
     bool source_changed_cache = false;
     Ref<GodotJSScript> base;
 
-    GodotJSScriptLanguage * lang_;
+    GodotJSScriptLanguageBase * lang_;
 
     HashSet<PlaceHolderScriptInstance*> placeholders;
 
@@ -58,7 +60,7 @@ private:
     std::shared_ptr<jsb::Environment> get_environment() const { return jsb::Environment::_access(env_id_); }
 
 public:
-    GodotJSScript(GodotJSScriptLanguage * lang = nullptr);
+    GodotJSScript(GodotJSScriptLanguageBase * lang = nullptr);
     virtual ~GodotJSScript() override;
 
     void attach_source(const String& p_path);

@@ -5,7 +5,7 @@
 
 #include "core/object/script_language.h"
 
-class GodotJSScriptLanguage : public ScriptLanguage
+class GodotJSScriptLanguageBase : public ScriptLanguage
 {
 private:
     friend class GodotJSScript;
@@ -17,7 +17,7 @@ private:
 
     bool once_inited_ = false;
     uint64_t last_ticks_ = 0;
-    std::shared_ptr<jsb::Environment> environment_;
+    static std::shared_ptr<jsb::Environment> environment_;
 
     Ref<RegEx> ts_class_name_matcher_;
     Ref<RegEx> js_class_name_matcher_;
@@ -44,8 +44,8 @@ public:
         return environment_->eval_source(str.get_data(), str.length(), "eval", r_err);
     }
 
-    GodotJSScriptLanguage();
-    virtual ~GodotJSScriptLanguage() override;
+    GodotJSScriptLanguageBase();
+    virtual ~GodotJSScriptLanguageBase() override;
 
     virtual void init() override;
     virtual void finish() override;
@@ -65,7 +65,7 @@ public:
     virtual bool validate(const String& p_script, const String& p_path = "", List<String>* r_functions = nullptr, List<ScriptError>* r_errors = nullptr, List<Warning>* r_warnings = nullptr, HashSet<int>* r_safe_lines = nullptr) const override;
     virtual Ref<Script> make_template(const String& p_template, const String& p_class_name, const String& p_base_class_name) const override;
     virtual void reload_all_scripts() override;
-    virtual void get_recognized_extensions(List<String>* p_extensions) const override;
+    virtual void get_recognized_extensions(List<String>* p_extensions) const = 0;
 
     virtual bool supports_documentation() const override { return true; }
 
@@ -75,9 +75,9 @@ public:
 #endif
 
 #pragma region DEFAULTLY AND PARTIALLY SUPPORTED
-    virtual String get_name() const override;
-    virtual String get_type() const override;
-    virtual String get_extension() const override { return JSB_TYPESCRIPT_EXT; }
+    virtual String get_name() const = 0;
+    virtual String get_type() const = 0;
+    virtual String get_extension() const = 0;
 
     virtual bool is_using_templates() override { return true; }
 #ifndef DISABLE_DEPRECATED
@@ -133,9 +133,29 @@ public:
     virtual int profiling_get_accumulated_data(ProfilingInfo* p_info_arr, int p_info_max) override { return -1; }
     virtual int profiling_get_frame_data(ProfilingInfo* p_info_arr, int p_info_max) override { return -1; }
 
-    virtual bool handles_global_class_type(const String& p_type) const override;
+    virtual bool handles_global_class_type(const String& p_type) const = 0;
     virtual String get_global_class_name(const String& p_path, String* r_base_type = nullptr, String* r_icon_path = nullptr) const override;
 #pragma endregion
+
+};
+
+class GodotJSScriptLanguage : public GodotJSScriptLanguageBase {
+public:
+    virtual String get_extension() const override { return JSB_TYPESCRIPT_EXT; }
+    virtual void get_recognized_extensions(List<String>* p_extensions) const override;
+    virtual bool handles_global_class_type(const String& p_type) const override;
+    virtual String get_name() const override;
+    virtual String get_type() const override;
+
+};
+
+class GodotJavascriptLanguage : public GodotJSScriptLanguageBase {
+public:
+    virtual String get_extension() const override { return JSB_JAVASCRIPT_EXT; }
+    virtual void get_recognized_extensions(List<String>* p_extensions) const override;
+    virtual bool handles_global_class_type(const String& p_type) const override;
+    virtual String get_name() const override;
+    virtual String get_type() const override;
 
 };
 
