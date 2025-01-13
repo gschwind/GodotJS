@@ -29,7 +29,7 @@ Ref<Resource> ResourceFormatLoaderGodotJSScript::load(const String& p_path, cons
     {
         //TODO a dirty but approaching solution for hot-reloading
         MutexLock lock(lang->mutex_);
-        SelfList<GodotJSScript> *elem = lang->script_list_.first();
+        SelfList<GodotJSScriptBase> *elem = lang->script_list_.first();
         while (elem)
         {
             if (elem->self()->get_path() == p_path)
@@ -68,8 +68,8 @@ Ref<Resource> ResourceFormatLoaderGodotJSScript::load(const String& p_path, cons
     JSB_LOG(VeryVerbose, "loading script resource %s on thread %s", p_path, uitos(Thread::get_caller_id()));
 
     // return a skeleton script which only contains path and source code without actually loaded in `realm` since `load` may called from background threads
-    Ref<GodotJSScript> spt;
-    spt.instantiate(lang);
+    Ref<GodotJSScriptBase> spt = lang->create_godotjsscript();
+    // Maybe need fix to load sources if tools is enable
     spt->attach_source(p_path);
     if (r_error) *r_error = OK;
     return spt;

@@ -20,6 +20,7 @@ void jsb_initialize_module(ModuleInitializationLevel p_level)
     if (p_level == MODULE_INITIALIZATION_LEVEL_SERVERS)
     {
         GDREGISTER_CLASS(GodotJSScript);
+        GDREGISTER_CLASS(GodotJavaScript);
 
         jsb::impl::GlobalInitialize::init();
 

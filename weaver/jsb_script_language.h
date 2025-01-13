@@ -8,12 +8,12 @@
 class GodotJSScriptLanguageBase : public ScriptLanguage
 {
 private:
-    friend class GodotJSScript;
+    friend class GodotJSScriptBase;
     friend class GodotJSScriptInstance;
     friend class ResourceFormatLoaderGodotJSScript;
 
     Mutex mutex_;
-    SelfList<class GodotJSScript>::List script_list_;
+    SelfList<class GodotJSScriptBase>::List script_list_;
 
     bool once_inited_ = false;
     uint64_t last_ticks_ = 0;
@@ -43,6 +43,8 @@ public:
         const CharString str = p_code.utf8();
         return environment_->eval_source(str.get_data(), str.length(), "eval", r_err);
     }
+
+    virtual GodotJSScriptBase* create_godotjsscript() const = 0;
 
     GodotJSScriptLanguageBase();
     virtual ~GodotJSScriptLanguageBase() override;
@@ -146,6 +148,7 @@ public:
     static GodotJSScriptLanguage * create_singleton() { if (singleton_) return singleton_; return singleton_ = memnew(GodotJSScriptLanguage); }
     static void destroy_singleton() { if (singleton_) memdelete(singleton_); singleton_ = nullptr; }
     virtual String get_extension() const override { return JSB_TYPESCRIPT_EXT; }
+    virtual GodotJSScriptBase* create_godotjsscript() const override;
     virtual void get_recognized_extensions(List<String>* p_extensions) const override;
     virtual bool handles_global_class_type(const String& p_type) const override;
     virtual String get_name() const override;
@@ -160,6 +163,7 @@ public:
     static GodotJavascriptLanguage * create_singleton() { if (singleton_) return singleton_; return singleton_ = memnew(GodotJavascriptLanguage); }
     static void destroy_singleton() { if (singleton_) memdelete(singleton_); singleton_ = nullptr; }
     virtual String get_extension() const override { return JSB_JAVASCRIPT_EXT; }
+    virtual GodotJSScriptBase* create_godotjsscript() const override;
     virtual void get_recognized_extensions(List<String>* p_extensions) const override;
     virtual bool handles_global_class_type(const String& p_type) const override;
     virtual String get_name() const override;

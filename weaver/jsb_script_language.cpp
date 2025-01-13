@@ -32,7 +32,7 @@ GodotJSScriptLanguageBase::~GodotJSScriptLanguageBase()
 
     //TODO manage script list in a safer way (access and ref with script.id)
     MutexLock lock(mutex_);
-    while (SelfList<GodotJSScript>* script_el = script_list_.first())
+    while (SelfList<GodotJSScriptBase>* script_el = script_list_.first())
     {
         script_el->remove_from_list();
     }
@@ -155,8 +155,7 @@ void GodotJSScriptLanguageBase::get_string_delimiters(List<String>* p_delimiters
 
 Script* GodotJSScriptLanguageBase::create_script() const
 {
-    // Remove const because actually the script constructor will register himself in `this'
-    return memnew(GodotJSScript(const_cast<GodotJSScriptLanguageBase *>(this)));
+    return create_godotjsscript();
 }
 
 bool GodotJSScriptLanguageBase::validate(const String& p_script, const String& p_path, List<String>* r_functions, List<ScriptError>* r_errors, List<Warning>* r_warnings, HashSet<int>* r_safe_lines) const
@@ -177,8 +176,7 @@ bool GodotJSScriptLanguageBase::validate(const String& p_script, const String& p
 
 Ref<Script> GodotJSScriptLanguageBase::make_template(const String& p_template, const String& p_class_name, const String& p_base_class_name) const
 {
-    Ref<GodotJSScript> spt;
-    spt.instantiate(const_cast<GodotJSScriptLanguageBase *>(this));
+    Ref<GodotJSScriptBase> spt = create_godotjsscript();
     String processed_template = p_template;
     processed_template = processed_template.replace("_BASE_", p_base_class_name)
                                  .replace("_CLASS_SNAKE_CASE_", jsb::internal::VariantUtil::to_snake_case_id(p_class_name))
@@ -283,7 +281,7 @@ void GodotJSScriptLanguageBase::scan_external_changes()
     // fix scripts with no .js counterpart found (only missing scripts)
     {
         MutexLock lock(mutex_);
-        const SelfList<GodotJSScript>* elem = script_list_.first();
+        const SelfList<GodotJSScriptBase>* elem = script_list_.first();
         while (elem)
         {
             elem->self()->load_module_if_missing();
@@ -316,6 +314,10 @@ void GodotJSScriptLanguage::get_recognized_extensions(List<String>* p_extensions
     p_extensions->push_back(JSB_TYPESCRIPT_EXT);
 }
 
+GodotJSScriptBase* GodotJSScriptLanguage::create_godotjsscript() const
+{
+    return memnew(GodotJSScript);
+}
 
 bool GodotJSScriptLanguage::handles_global_class_type(const String& p_type) const
 {
@@ -341,18 +343,24 @@ void GodotJavascriptLanguage::get_recognized_extensions(List<String>* p_extensio
     p_extensions->push_back(JSB_JAVASCRIPT_EXT);
 }
 
+GodotJSScriptBase* GodotJavascriptLanguage::create_godotjsscript() const
+{
+    return memnew(GodotJavaScript);
+}
+
+
 bool GodotJavascriptLanguage::handles_global_class_type(const String& p_type) const
 {
-    return p_type == "JavaScript";
+    return p_type == jsb_typename(GodotJavaScript);
 }
 
 String GodotJavascriptLanguage::get_name() const
 {
-    return "JavaScript";
+    return jsb_typename(GodotJavaScript);
 }
 
 String GodotJavascriptLanguage::get_type() const
 {
-    return "JavaScript";
+    return jsb_typename(GodotJavaScript);
 }
 

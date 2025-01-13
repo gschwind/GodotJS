@@ -7,7 +7,7 @@
 class GodotJSScriptInstance : public ScriptInstance
 {
 private:
-    friend class GodotJSScript;
+    friend class GodotJSScriptBase;
 
     Object* owner_ = nullptr;
     Ref<GodotJSScript> script_;
