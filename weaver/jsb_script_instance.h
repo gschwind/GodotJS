@@ -10,7 +10,7 @@ private:
     friend class GodotJSScriptBase;
 
     Object* owner_ = nullptr;
-    Ref<GodotJSScript> script_;
+    Ref<GodotJSScriptBase> script_;
     // object handle id
     jsb::NativeObjectID object_id_;
 
