@@ -309,6 +309,8 @@ void GodotJSScriptLanguageBase::thread_exit()
 
 // GodotJSScriptLanguage definitions
 
+GodotJSScriptLanguage * GodotJSScriptLanguage::singleton_ = nullptr;
+
 void GodotJSScriptLanguage::get_recognized_extensions(List<String>* p_extensions) const
 {
     p_extensions->push_back(JSB_TYPESCRIPT_EXT);
@@ -331,6 +333,8 @@ String GodotJSScriptLanguage::get_type() const
 }
 
 // GodotJavascriptLanguage definition
+
+GodotJavascriptLanguage * GodotJavascriptLanguage::singleton_ = nullptr;
 
 void GodotJavascriptLanguage::get_recognized_extensions(List<String>* p_extensions) const
 {
