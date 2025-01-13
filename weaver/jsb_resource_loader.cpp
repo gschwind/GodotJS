@@ -84,13 +84,17 @@ void ResourceFormatLoaderGodotJSScript::get_recognized_extensions(List<String>* 
 
 bool ResourceFormatLoaderGodotJSScript::handles_type(const String& p_type) const
 {
-    return (p_type == "Script" || p_type == jsb_typename(GodotJSScript));
+    return (p_type == "Script" || p_type == jsb_typename(GodotJSScript) || p_type == jsb_typename(GodotJavaScript));
 }
 
 String ResourceFormatLoaderGodotJSScript::get_resource_type(const String& p_path) const
 {
     const String el = p_path.get_extension().to_lower();
-    return (el == JSB_TYPESCRIPT_EXT || el == JSB_JAVASCRIPT_EXT) ? jsb_typename(GodotJSScript) : "";
+    if (el == JSB_TYPESCRIPT_EXT)
+        return jsb_typename(GodotJSScript);
+    if (el == JSB_JAVASCRIPT_EXT)
+        return jsb_typename(GodotJavaScript);
+    return "";
 }
 
 void ResourceFormatLoaderGodotJSScript::get_dependencies(const String& p_path, List<String>* p_dependencies, bool p_add_types)
