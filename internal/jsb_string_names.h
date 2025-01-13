@@ -20,8 +20,10 @@ namespace jsb::internal
         static void create() { singleton_ = memnew(StringNames); }
         static void free()
         {
-            memdelete(singleton_);
-            singleton_ = nullptr;
+            if (singleton_) {
+                memdelete(singleton_);
+                singleton_ = nullptr;
+            }
         }
 
         // we need to ignore some names used in godot (such as XXX.name) to avoid conflicts in javascript.

@@ -16,6 +16,7 @@
 #include "../weaver-editor/templates/templates.gen.h"
 #endif
 
+int GodotJSScriptLanguageBase::prevent_environment_dispose_ = 0;
 std::shared_ptr<jsb::Environment> GodotJSScriptLanguageBase::environment_ = nullptr;
 
 GodotJSScriptLanguageBase::GodotJSScriptLanguageBase()
@@ -55,6 +56,7 @@ void GodotJSScriptLanguageBase::init()
     params.debugger_port = jsb::internal::Settings::get_debugger_port();
     params.thread_id = Thread::get_caller_id();
 
+    ++prevent_environment_dispose_;
     // Initialize only once
     if (!environment_) {
         environment_ = std::make_shared<jsb::Environment>(params);
@@ -78,8 +80,10 @@ void GodotJSScriptLanguageBase::finish()
 {
     jsb_check(once_inited_);
     once_inited_ = false;
-    environment_->dispose();
-    environment_.reset();
+    if (--prevent_environment_dispose_ == 1) {
+        environment_->dispose();
+        environment_.reset();
+    }
 #if !JSB_WITH_WEB
     jsb::Worker::finish();
 #endif

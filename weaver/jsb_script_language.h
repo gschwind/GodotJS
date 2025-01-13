@@ -17,6 +17,7 @@ private:
 
     bool once_inited_ = false;
     uint64_t last_ticks_ = 0;
+    static int prevent_environment_dispose_;
     static std::shared_ptr<jsb::Environment> environment_;
 
     Ref<RegEx> ts_class_name_matcher_;
